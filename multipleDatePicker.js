@@ -136,7 +136,7 @@ angular.module('multipleDatePicker', [])
                 scope.$watch('daysSelected', function (newValue) {
                     if (newValue) {
                         var momentDates = [];
-                        newValue.map(function (timestamp) {
+                        newValue.sort().map(function (timestamp) {
                             momentDates.push(moment(timestamp));
                         });
                         scope.convertedDaysSelected = momentDates;

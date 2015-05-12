@@ -84,9 +84,11 @@ angular.module('multipleDatePicker', [])
             },
             template: '<div class="multiple-date-picker">' +
                 '<div class="picker-top-row">' +
-                '<div class="text-center picker-navigate picker-navigate-left-arrow" ng-class="{\'disabled\':disableBackButton, \'highlighted\' : highlightedPrev}" ng-click="previousMonth()">&lt;</div>' +
+                '<div class="text-center picker-navigate picker-navigate-left-arrow" ' +
+                'ng-class="{\'disabled\':disableBackButton, \'highlighted\' : highlightedPrev}" ng-click="previousMonth()"><i class="fa fa-fw fa-arrow-left"></i></div>' +
                 '<div class="text-center picker-month">{{month.format(\'MMMM YYYY\')}}</div>' +
-                '<div class="text-center picker-navigate picker-navigate-right-arrow" ng-class="{\'disabled\':disableNextButton, \'highlighted\' : highlightedNext}" ng-click="nextMonth()">&gt;</div>' +
+                '<div class="text-center picker-navigate picker-navigate-right-arrow" ' +
+                'ng-class="{\'disabled\':disableNextButton, \'highlighted\' : highlightedNext}" ng-click="nextMonth()"><i class="fa fa-fw fa-arrow-right"></i></div>' +
                 '</div>' +
                 '<div class="picker-days-week-row">' +
                 '<div class="text-center" ng-repeat="day in daysOfWeek">{{day}}</div>' +
@@ -111,8 +113,14 @@ angular.module('multipleDatePicker', [])
                         var lastDay = scope.convertedDaysSelected[scope.convertedDaysSelected.length - 1],
                             firstDay = scope.convertedDaysSelected[0];
 
-                        scope.highlightedPrev = scope.autoHighlightNav && previousMonth.isAfter(firstDay, 'month');
-                        scope.highlightedNext = scope.autoHighlightNav && nextMonth.isBefore(lastDay, 'month');
+                        scope.highlightNav = scope.autoHighlightNav || false;
+
+
+                        scope.highlightedPrev = scope.highlightNav &&
+                            (previousMonth.isAfter(firstDay, 'month') || previousMonth.isSame(firstDay, 'month')) && !angular.isUndefined(firstDay);
+                        scope.highlightedNext = scope.highlightNav &&
+                            (nextMonth.isBefore(lastDay, 'month') || nextMonth.isSame(lastDay, 'month')) && !angular.isUndefined(lastDay);
+
                     },
                     getDaysOfWeek = function () {
                         /*To display days of week names in moment.lang*/
@@ -139,12 +147,14 @@ angular.module('multipleDatePicker', [])
                         newValue.sort().map(function (timestamp) {
                             momentDates.push(moment(timestamp));
                         });
+
                         scope.convertedDaysSelected = momentDates;
                         scope.generate();
                     }
                 }, true);
 
-                scope.$watch('monthPresented', function () {
+                scope.$watch('monthPresented', function (value) {
+                    scope.month = moment(value).startOf('month');
                     scope.generate();
                 }, true);
 
@@ -159,16 +169,12 @@ angular.module('multipleDatePicker', [])
                     scope.generate();
                 }, true);
 
-                scope.$watch('highlightDays', function () {
-                    scope.generate();
-                }, true);
-
                 scope.$watch('allDaysOff', function () {
                     scope.generate();
                 }, true);
 
                 //default values
-                scope.month = scope.monthPresented || moment().startOf('day');
+                scope.month = scope.month || moment().startOf('day');
                 scope.days = [];
                 scope.convertedDaysSelected = scope.convertedDaysSelected || [];
                 scope.weekDaysOff = scope.weekDaysOff || [];
@@ -176,7 +182,7 @@ angular.module('multipleDatePicker', [])
                 scope.disableBackButton = false;
                 scope.disableNextButton = false;
                 scope.daysOfWeek = getDaysOfWeek();
-                scope.highlightNav = autoHighlightNav || false;
+                scope.highlightNav = false;
 
                 /**
                  * Called when user clicks a date

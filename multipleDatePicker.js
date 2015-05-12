@@ -70,23 +70,28 @@ angular.module('multipleDatePicker', [])
                  * Type: boolean
                  * if true can't go in futur months after today's month
                  * */
-                disallowGoFuturMonths: '='
+                disallowGoFuturMonths: '=',
+                /*
+                 * Type integer
+                 * Timestamp of month that will be presented
+                 **/
+                monthPresented: '=?'
             },
             template: '<div class="multiple-date-picker">' +
-            '<div class="picker-top-row">' +
-            '<div class="text-center picker-navigate picker-navigate-left-arrow" ng-class="{\'disabled\':disableBackButton}" ng-click="previousMonth()">&lt;</div>' +
-            '<div class="text-center picker-month">{{month.format(\'MMMM YYYY\')}}</div>' +
-            '<div class="text-center picker-navigate picker-navigate-right-arrow" ng-class="{\'disabled\':disableNextButton}" ng-click="nextMonth()">&gt;</div>' +
-            '</div>' +
-            '<div class="picker-days-week-row">' +
-            '<div class="text-center" ng-repeat="day in daysOfWeek">{{day}}</div>' +
-            '</div>' +
-            '<div class="picker-days-row">' +
-            '<div class="text-center picker-day picker-empty" ng-repeat="x in emptyFirstDays">&nbsp;</div>' +
-            '<div class="text-center picker-day {{day.css}}" title="{{day.title}}" ng-repeat="day in days" ng-click="toggleDay($event, day)" ng-mouseover="hoverDay($event, day)" ng-mouseleave="dayHover($event, day)" ng-class="{\'picker-selected\':day.selected, \'picker-off\':!day.selectable, \'today\':day.today}">{{day ? day.format(\'D\') : \'\'}}</div>' +
-            '<div class="text-center picker-day picker-empty" ng-repeat="x in emptyLastDays">&nbsp;</div>' +
-            '</div>' +
-            '</div>',
+                '<div class="picker-top-row">' +
+                '<div class="text-center picker-navigate picker-navigate-left-arrow" ng-class="{\'disabled\':disableBackButton}" ng-click="previousMonth()">&lt;</div>' +
+                '<div class="text-center picker-month">{{month.format(\'MMMM YYYY\')}}</div>' +
+                '<div class="text-center picker-navigate picker-navigate-right-arrow" ng-class="{\'disabled\':disableNextButton}" ng-click="nextMonth()">&gt;</div>' +
+                '</div>' +
+                '<div class="picker-days-week-row">' +
+                '<div class="text-center" ng-repeat="day in daysOfWeek">{{day}}</div>' +
+                '</div>' +
+                '<div class="picker-days-row">' +
+                '<div class="text-center picker-day picker-empty" ng-repeat="x in emptyFirstDays">&nbsp;</div>' +
+                '<div class="text-center picker-day {{day.css}}" title="{{day.title}}" ng-repeat="day in days" ng-click="toggleDay($event, day)" ng-mouseover="hoverDay($event, day)" ng-mouseleave="dayHover($event, day)" ng-class="{\'picker-selected\':day.selected, \'picker-off\':!day.selectable, \'today\':day.today}">{{day ? day.format(\'D\') : \'\'}}</div>' +
+                '<div class="text-center picker-day picker-empty" ng-repeat="x in emptyLastDays">&nbsp;</div>' +
+                '</div>' +
+                '</div>',
             link: function (scope) {
 
                 /*utility functions*/
@@ -127,6 +132,10 @@ angular.module('multipleDatePicker', [])
                     }
                 }, true);
 
+                scope.$watch('monthPresented', function () {
+                    scope.generate();
+                }, true);
+
                 scope.$watch('weekDaysOff', function () {
                     scope.generate();
                 }, true);
@@ -147,7 +156,7 @@ angular.module('multipleDatePicker', [])
                 }, true);
 
                 //default values
-                scope.month = scope.month || moment().startOf('day');
+                scope.month = scope.monthPresented || moment().startOf('day');
                 scope.days = [];
                 scope.convertedDaysSelected = scope.convertedDaysSelected || [];
                 scope.weekDaysOff = scope.weekDaysOff || [];
@@ -188,9 +197,12 @@ angular.module('multipleDatePicker', [])
                             });
                         }
 
-                        if (typeof(scope.callback) === "function") {
+                        if (typeof (scope.callback) === "function") {
                             $log.warn('callback option deprecated, please use dayClick');
-                            scope.callback({timestamp: momentDate.valueOf(), selected: momentDate.selected});
+                            scope.callback({
+                                timestamp: momentDate.valueOf(),
+                                selected: momentDate.selected
+                            });
                         }
                     }
                 };
@@ -268,13 +280,14 @@ angular.module('multipleDatePicker', [])
                         firstDayOfMonth = moment(scope.month).date(1),
                         days = [],
                         now = moment(),
-                        lastDayOfMonth = moment(firstDayOfMonth).endOf('month'),
+                        console.log(now);
+                    lastDayOfMonth = moment(firstDayOfMonth).endOf('month'),
                         maxDays = lastDayOfMonth.date();
 
-                    var createDate = function(){
+                    var createDate = function () {
                         var date = moment(previousDay.add(1, 'days'));
-                        if(angular.isArray(scope.highlightDays)){
-                            var hlDay = scope.highlightDays.filter(function(d){
+                        if (angular.isArray(scope.highlightDays)) {
+                            var hlDay = scope.highlightDays.filter(function (d) {
                                 return date.isSame(d.date, 'day');
                             });
                             date.css = hlDay.length > 0 ? hlDay[0].css : '';

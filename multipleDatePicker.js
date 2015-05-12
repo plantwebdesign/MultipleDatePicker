@@ -113,7 +113,7 @@ angular.module('multipleDatePicker', [])
                         var lastDay = scope.convertedDaysSelected[scope.convertedDaysSelected.length - 1],
                             firstDay = scope.convertedDaysSelected[0];
 
-                        scope.highlightNav = scope.autoHighlightNav || false;
+                        scope.highlightNav = scope.autoHighlightNav || scope.highlightNav;
 
 
                         scope.highlightedPrev = scope.highlightNav &&

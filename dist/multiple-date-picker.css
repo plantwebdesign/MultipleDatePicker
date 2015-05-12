@@ -34,6 +34,11 @@
   cursor: default;
 }
 
+.picker-navigate.highlighted,
+.picker-navigate.highlighted:hover {
+  background-color: red;
+}
+
 .picker-month {
   width: 66.66%;
 }

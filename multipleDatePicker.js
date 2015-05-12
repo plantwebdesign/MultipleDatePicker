@@ -75,13 +75,18 @@ angular.module('multipleDatePicker', [])
                  * Type integer
                  * Timestamp of month that will be presented
                  **/
-                monthPresented: '=?'
+                monthPresented: '=?',
+                /*
+                 * Type boolean
+                 * Highlight month navigation based on daysSelected
+                 **/
+                autoHighlightNav: '='
             },
             template: '<div class="multiple-date-picker">' +
                 '<div class="picker-top-row">' +
-                '<div class="text-center picker-navigate picker-navigate-left-arrow" ng-class="{\'disabled\':disableBackButton}" ng-click="previousMonth()">&lt;</div>' +
+                '<div class="text-center picker-navigate picker-navigate-left-arrow" ng-class="{\'disabled\':disableBackButton, \'highlighted\' : highlightedPrev}" ng-click="previousMonth()">&lt;</div>' +
                 '<div class="text-center picker-month">{{month.format(\'MMMM YYYY\')}}</div>' +
-                '<div class="text-center picker-navigate picker-navigate-right-arrow" ng-class="{\'disabled\':disableNextButton}" ng-click="nextMonth()">&gt;</div>' +
+                '<div class="text-center picker-navigate picker-navigate-right-arrow" ng-class="{\'disabled\':disableNextButton, \'highlighted\' : highlightedNext}" ng-click="nextMonth()">&gt;</div>' +
                 '</div>' +
                 '<div class="picker-days-week-row">' +
                 '<div class="text-center" ng-repeat="day in daysOfWeek">{{day}}</div>' +
@@ -99,8 +104,15 @@ angular.module('multipleDatePicker', [])
                         var today = moment(),
                             previousMonth = moment(scope.month).subtract(1, 'month'),
                             nextMonth = moment(scope.month).add(1, 'month');
+
                         scope.disableBackButton = scope.disallowBackPastMonths && today.isAfter(previousMonth, 'month');
                         scope.disableNextButton = scope.disallowGoFuturMonths && today.isBefore(nextMonth, 'month');
+
+                        var lastDay = scope.convertedDaysSelected[scope.convertedDaysSelected.length - 1],
+                            firstDay = scope.convertedDaysSelected[0];
+
+                        scope.highlightedPrev = scope.autoHighlightNav && previousMonth.isAfter(firstDay, 'month');
+                        scope.highlightedNext = scope.autoHighlightNav && nextMonth.isBefore(lastDay, 'month');
                     },
                     getDaysOfWeek = function () {
                         /*To display days of week names in moment.lang*/
@@ -164,6 +176,7 @@ angular.module('multipleDatePicker', [])
                 scope.disableBackButton = false;
                 scope.disableNextButton = false;
                 scope.daysOfWeek = getDaysOfWeek();
+                scope.highlightNav = autoHighlightNav || false;
 
                 /**
                  * Called when user clicks a date
@@ -280,8 +293,7 @@ angular.module('multipleDatePicker', [])
                         firstDayOfMonth = moment(scope.month).date(1),
                         days = [],
                         now = moment(),
-                        console.log(now);
-                    lastDayOfMonth = moment(firstDayOfMonth).endOf('month'),
+                        lastDayOfMonth = moment(firstDayOfMonth).endOf('month'),
                         maxDays = lastDayOfMonth.date();
 
                     var createDate = function () {

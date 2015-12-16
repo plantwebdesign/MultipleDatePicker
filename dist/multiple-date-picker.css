@@ -84,6 +84,7 @@
 .picker-day.today.picker-off:hover {
   color: #00a3ff;
   font-weight: bold;
+  padding: 9px 0 11px;
 }
 
 .picker-day:not(.picker-off):not(.picker-empty):hover {

@@ -85,10 +85,10 @@ angular.module('multipleDatePicker', [])
             template: '<div class="multiple-date-picker">' +
                 '<div class="picker-top-row">' +
                 '<div class="text-center picker-navigate picker-navigate-left-arrow" ' +
-                'ng-class="{\'disabled\':disableBackButton, \'highlighted\' : highlightedPrev}" ng-click="previousMonth()"><i class="fa fa-fw fa-arrow-left"></i></div>' +
+                'ng-class="{\'disabled\':disableBackButton, \'highlighted\' : highlightedPrev}" ng-click="previousMonth()"><i class="icon-arrow-left12"></i></div>' +
                 '<div class="text-center picker-month">{{month.format(\'MMMM YYYY\')}}</div>' +
                 '<div class="text-center picker-navigate picker-navigate-right-arrow" ' +
-                'ng-class="{\'disabled\':disableNextButton, \'highlighted\' : highlightedNext}" ng-click="nextMonth()"><i class="fa fa-fw fa-arrow-right"></i></div>' +
+                'ng-class="{\'disabled\':disableNextButton, \'highlighted\' : highlightedNext}" ng-click="nextMonth()"><i class="icon-arrow-right12"></i></div>' +
                 '</div>' +
                 '<div class="picker-days-week-row">' +
                 '<div class="text-center" ng-repeat="day in daysOfWeek">{{day}}</div>' +
